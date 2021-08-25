@@ -2,12 +2,40 @@
 import React from "react";
 import { CircularProgressbar } from "react-circular-progressbar";
 import { ContainerFileList, FileInfo, Preview } from "./styles";
-import { MdCheckCircle, MdError, MdLink } from "react-icons/md";
+import { MdCheckCircle, MdError, MdLink, MdColorLens } from "react-icons/md";
+import { useState } from "react";
+import ColorSelector from "react-color-selector";
+import { useEffect } from 'react';
 
 function FileList({ files }) {
+  const [showPaletteColor, setShowPaletteColor] = useState(-1);
+
+  let [myColor, pickedColor] = useState();
+  let picker_data = {
+    col: 12,
+    row: 12,
+    width: 300,
+    height: 250,
+    view: "both",
+    theme: "dark",
+    title: "Cores",
+    cellControl: 4,
+  };
+
+  const handleShowpaletteColor = (itemIndex) => {
+    console.log(itemIndex)
+    setShowPaletteColor(showPaletteColor === -1 ? itemIndex : -1);
+    // setShowPaletteColor(-1);
+    console.log(showPaletteColor)
+  } 
+
+  useEffect(() => {
+    console.log(showPaletteColor)
+  }, [showPaletteColor])
+
   return (
     <ContainerFileList>
-      {files.map((uploadedFile) => (
+      {files.map((uploadedFile, idx) => (
         <li key={uploadedFile.id}>
           <FileInfo>
             <Preview src={uploadedFile.preview} />
@@ -22,6 +50,20 @@ function FileList({ files }) {
             </div>
           </FileInfo>
           <div>
+            {!uploadedFile.uploaded && (
+              <button key={idx} onClick={() => setShowPaletteColor(showPaletteColor === -1 ? idx : -1)}>
+                {" "}
+                <MdColorLens size={24} color="black" />{" "}
+              </button>
+            )}
+            {showPaletteColor === idx && (
+              <div style={{ display: "block", position: "absolute" }}>
+                <ColorSelector
+                  pallet={picker_data}
+                  selectedColor={pickedColor}
+                />
+              </div>
+            )}
             {!uploadedFile.uploaded && !uploadedFile.error && (
               <CircularProgressbar
                 styles={{

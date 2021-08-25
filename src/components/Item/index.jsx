@@ -80,9 +80,9 @@ function Item({ data, index }) {
     cellControl: 4,
   };
 
-  useEffect(() => {
-    console.log(pickedColor)
-  }, [pickedColor])
+  // useEffect(() => {
+  //   console.log(pickedColor)
+  // }, [pickedColor])
 
   return (
     <Container

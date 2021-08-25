@@ -37,6 +37,7 @@ export const FileInfo = styled.div`
   }
 `;
 
+
 export const Preview = styled.div`
   width: 36px;
   height: 36px;
@@ -45,4 +46,5 @@ export const Preview = styled.div`
   background-repeat: no-repeat;
   background-size: cover;
   background-position: 50% 50%;
+  margin-right: 5px;
 `;

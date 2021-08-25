@@ -131,7 +131,7 @@ function Area() {
         },
       ]);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uploadedFiles]);
 
   const handleTeste = () => {
@@ -226,8 +226,10 @@ function Area() {
       </header>
       <Main onKeyDown={(e) => handleKeyDown(e)}>
         <LeftArea>
-          <Upload onUpload={handleUpload} />
-          {!!uploadedFiles.length && <FileList files={uploadedFiles} />}
+          <div>
+            <Upload onUpload={handleUpload} />
+            {!!uploadedFiles.length && <FileList files={uploadedFiles} />}
+          </div>
         </LeftArea>
         <MainArea
           ref={ref}
