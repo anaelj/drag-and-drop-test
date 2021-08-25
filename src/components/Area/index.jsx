@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { useDrop } from "react-dnd";
-import { Teste, Footer, Main, MainArea, LeftArea } from "./styles";
+import { Footer, Main, MainArea, LeftArea } from "./styles";
 import { useRef } from "react";
 import Item from "./../Item/index";
 import AreaContext from "./context";
 import Upload from "../Upload";
 import html2canvas from "html2canvas";
 import JSZip from "jszip";
-// import FileList from "./../FileList/index";
+import FileList from "./../FileList/index";
 import { uniqueId } from "lodash";
 import filesize from "filesize";
-import api from "../../services/api";
-import domtoimage from "dom-to-image";
+// import api from "../../services/api";
+// import domtoimage from "dom-to-image";
 import { saveAs } from "file-saver";
 
 function Area() {
@@ -72,46 +72,46 @@ function Area() {
     }));
     setUploadedFiles(uploadedFiles.concat(temp));
 
-    uploadedFiles.forEach(processUpload);
+    // uploadedFiles.forEach(processUpload);
   };
 
-  const updateFile = (id, data) => {
-    setUploadedFiles(
-      uploadedFiles.map((item) => {
-        return id === item.id ? { ...item, ...data } : item;
-      })
-    );
-  };
+  // const updateFile = (id, data) => {
+  //   setUploadedFiles(
+  //     uploadedFiles.map((item) => {
+  //       return id === item.id ? { ...item, ...data } : item;
+  //     })
+  //   );
+  // };
 
-  const processUpload = (uploadedFile) => {
-    const data = new FormData();
+  // const processUpload = (uploadedFile) => {
+  //   const data = new FormData();
 
-    data.append("file", uploadedFile.file, uploadedFile.name);
-    data.append("key", updateFile.id);
+  //   data.append("file", uploadedFile.file, uploadedFile.name);
+  //   data.append("key", updateFile.id);
 
-    api
-      .post("posts", data, {
-        onUploadProgress: (e) => {
-          const progress = parseInt(Math.round((e.loaded * 100) / e.total));
-          updateFile(uploadedFile.id, {
-            progress,
-          });
-        },
-      })
-      .then((response) => {
-        console.log("aa", response);
-        updateFile(uploadedFile.id, {
-          uploaded: true,
-          id: response.data._id,
-          url: response.data.url,
-        });
-      })
-      .catch((error) => {
-        updateFile(uploadedFile.id, {
-          error: true,
-        });
-      });
-  };
+  //   api
+  //     .post("posts", data, {
+  //       onUploadProgress: (e) => {
+  //         const progress = parseInt(Math.round((e.loaded * 100) / e.total));
+  //         updateFile(uploadedFile.id, {
+  //           progress,
+  //         });
+  //       },
+  //     })
+  //     .then((response) => {
+  //       console.log("aa", response);
+  //       updateFile(uploadedFile.id, {
+  //         uploaded: true,
+  //         id: response.data._id,
+  //         url: response.data.url,
+  //       });
+  //     })
+  //     .catch((error) => {
+  //       updateFile(uploadedFile.id, {
+  //         error: true,
+  //       });
+  //     });
+  // };
 
   useEffect(() => {
     // console.log(uploadedFiles[0]?.preview);
@@ -131,6 +131,7 @@ function Area() {
         },
       ]);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uploadedFiles]);
 
   const handleTeste = () => {
@@ -167,47 +168,28 @@ function Area() {
     });
   };
 
-  const downloadHandler = () => {
-    domtoimage
-      .toBlob(document.getElementById("capture"), { width: 1080, height: 1080 })
-      .then(function (blob) {
-        saveAs(blob, "myImage.png");
-      });
+  // const downloadHandler = () => {
+  //   domtoimage
+  //     .toBlob(document.getElementById("capture"), { width: 1080, height: 1080 })
+  //     .then(function (blob) {
+  //       saveAs(blob, "myImage.png");
+  //     });
 
-    let images = [];
-    domtoimage
-      .toBlob(document.getElementById("capture"))
-      .then(function (blob) {
-        images.push(blob);
-      })
-      .then(function () {
-        let zip = new JSZip();
-        zip.file("myImage.png", images[0], { binary: true });
-        zip.generateAsync({ type: "blob" }).then(function callback(blob) {
-          saveAs(blob, "myImage.zip");
-        });
-      });
-  };
+  //   let images = [];
+  //   domtoimage
+  //     .toBlob(document.getElementById("capture"))
+  //     .then(function (blob) {
+  //       images.push(blob);
+  //     })
+  //     .then(function () {
+  //       let zip = new JSZip();
+  //       zip.file("myImage.png", images[0], { binary: true });
+  //       zip.generateAsync({ type: "blob" }).then(function callback(blob) {
+  //         saveAs(blob, "myImage.zip");
+  //       });
+  //     });
+  // };
 
-  function saveAss(uri, filename) {
-    var link = document.createElement("a");
-
-    if (typeof link.download === "string") {
-      link.href = uri;
-      link.download = filename;
-
-      //Firefox requires the link to be in the body
-      document.body.appendChild(link);
-
-      //simulate click
-      link.click();
-
-      //remove the link when done
-      document.body.removeChild(link);
-    } else {
-      window.open(uri);
-    }
-  }
   return (
     <AreaContext.Provider value={{ elementsPosition, move }}>
       <header className="App-header">
@@ -245,6 +227,7 @@ function Area() {
       <Main onKeyDown={(e) => handleKeyDown(e)}>
         <LeftArea>
           <Upload onUpload={handleUpload} />
+          {!!uploadedFiles.length && <FileList files={uploadedFiles} />}
         </LeftArea>
         <MainArea
           ref={ref}
@@ -262,7 +245,6 @@ function Area() {
         <div></div>
         <div className="filelist">
           {/* <Upload onUpload={handleUpload} /> */}
-          {/* {!!uploadedFiles.length && <FileList files={uploadedFiles} />} */}
         </div>
         <div></div>
       </Footer>
