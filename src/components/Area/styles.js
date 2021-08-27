@@ -22,6 +22,7 @@ export const Main = styled.main`
 `;
 export const LeftArea = styled.div` 
   flex: 1;
+  overflow-y: scroll;
 
   /* background-position: 50% 50%; */
 

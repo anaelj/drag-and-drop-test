@@ -14,53 +14,48 @@ import filesize from "filesize";
 // import domtoimage from "dom-to-image";
 import { saveAs } from "file-saver";
 import TextList from "../TextList";
-import ItemSettings from './../ItemSettings/index';
 
 function Area() {
-  const data = [
-    {
-      id: 1,
-      top: "40px",
-      left: "40px",
-      cor: "red",
-      texto: "Texto padrão",
-      backgroundColor: "blue",
-    },
-  ];
+  const defaultItem = {
+    id: uniqueId(),
+    top: "40px",
+    left: "40px",
+    color: "red",
+    texto: "Texto padrão",
+    backgroundColor: "blue",
+  };
+
+  const data = [defaultItem];
   const ref = useRef();
   const [elementsPosition, setElementsPosition] = useState(data);
+  const [selectedItem, setSelectedItem] = useState(elementsPosition[0]);
   const [textoAdd, setTextoAdd] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState([]);
-
-  function move(moved) {
-    const temp = elementsPosition.filter((item) => item.id !== moved.id);
-    temp.push(moved);
-    setElementsPosition(temp);
-  }
 
   const [, dropRef] = useDrop({
     accept: "CARD",
     hover(item, monitor) {
       const draggedOffset = monitor.getClientOffset(); // posição do item durente a movimentação
-      move({
+      const itemMoving = {
         id: item.id,
         top: draggedOffset.y + "px",
         left: draggedOffset.x + "px",
-        cor: item.cor,
+        color: item.color,
         texto: item.texto,
         children: item.children,
         backgroundColor: item.backgroundColor,
-      });
+      };
+      setSelectedItem(itemMoving);
     },
   });
 
   dropRef(ref);
 
-  const handleKeyDown = (event) => {
-    console.log(event.keyCode);
-    // if (event.keyCode === 13) {
-    // }
-  };
+  // const handleKeyDown = (event) => {
+  //   console.log(event.keyCode);
+  //   // if (event.keyCode === 13) {
+  //   // }
+  // };
 
   const handleUpload = (files) => {
     const temp = files.map((file) => ({
@@ -125,45 +120,27 @@ function Area() {
         const exists = elementsPosition.find((item) => item.id === element.id);
 
         if (!exists) {
-          setElementsPosition([
-            ...elementsPosition,
-            {
-              id: element.id,
-              top: "10px",
-              left: "10px",
-              // backgroundColor: uploadedFiles[uploadedFiles.length - 1].backgroundColor,
-              children: (
-                <img
-                  src={uploadedFiles[uploadedFiles.length - 1].preview}
-                  alt="img"
-                />
-              ),
-            },
-          ]);
+          const newItem = {
+            id: element.id,
+            top: "10px",
+            left: "10px",
+            // backgroundColor: uploadedFiles[uploadedFiles.length - 1].backgroundColor,
+            children: (
+              <img
+                src={uploadedFiles[uploadedFiles.length - 1].preview}
+                alt="img"
+              />
+            ),
+          };
+          setElementsPosition([...elementsPosition, newItem]);
+          setSelectedItem(newItem);
         }
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uploadedFiles]);
 
-  const handleChangebackgroundColor = ({ newColor, id }) => {
-    // elementsPosition.find(item => item.id === id).backgroundColor = newColor;
-    // console.log(elementsPosition.find(item => item.id === id))
-    // console.log(newColor, id)
-
-    setElementsPosition(
-      elementsPosition.map((item) =>
-        item.id === id
-          ? {
-              ...item,
-              backgroundColor: newColor,
-            }
-          : item
-      )
-    );
-  };
-
-  const handleTeste = () => {
+  const handleDownloadImage = () => {
     // downloadHandler();
 
     html2canvas(document.querySelector("#capture")).then((canvas) => {
@@ -219,22 +196,39 @@ function Area() {
   //     });
   // };
 
+  // useEffect(() => {
+  //   // console.log('1111111111111111')
+  //   // console.log(selectedItem)
+  //   // console.log('222222222222222')
+  //   setElementsPosition(
+  //     elementsPosition.map((item) =>
+  //       item.id === selectedItem.id ? selectedItem : item
+  //     )
+  //   );
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [selectedItem]);
+
+  useEffect(() => {
+   console.log(elementsPosition)
+  }, [elementsPosition])
+
+
   return (
-    <AreaContext.Provider value={{ elementsPosition, move }}>
+    <AreaContext.Provider
+      value={{
+        elementsPosition,
+        setElementsPosition,
+        selectedItem,
+        setSelectedItem,
+      }}
+    >
       <header className="App-header">
         <h1>Testes Cegonha</h1>
         <div>
           <button
             onClick={() =>
               setElementsPosition([
-                ...elementsPosition,
-                {
-                  id: Math.floor(Math.random() * 1000),
-                  top: "10px",
-                  left: "10px",
-                  cor: "red",
-                  texto: textoAdd,
-                },
+                ...elementsPosition, { ...defaultItem, texto: textoAdd }
               ])
             }
           >
@@ -250,20 +244,15 @@ function Area() {
           {/* <button onClick={() => (elementsPosition[1].top = "400px")}>
             Adicionar Logo
           </button> */}
-          <button onClick={handleTeste}>Capture</button>
+          <button onClick={handleDownloadImage}>Capture</button>
         </div>
       </header>
-      <Main onKeyDown={(e) => handleKeyDown(e)}>
+      <Main>
         <LeftArea>
           <div>
             <Upload onUpload={handleUpload} />
-            <TextList textItens={elementsPosition} changebackGroundColor={handleChangebackgroundColor}/>
-            {!!uploadedFiles.length && (
-              <FileList
-                files={uploadedFiles}
-                changebackGroundColor={handleChangebackgroundColor}
-              />
-            )}
+            <TextList textItens={elementsPosition} />
+            {!!uploadedFiles.length && <FileList files={uploadedFiles} />}
           </div>
         </LeftArea>
         <MainArea
@@ -278,11 +267,7 @@ function Area() {
           ))}
         </MainArea>
       </Main>
-      <Footer>
-            
-
-
-      </Footer>
+      <Footer></Footer>
     </AreaContext.Provider>
   );
 }

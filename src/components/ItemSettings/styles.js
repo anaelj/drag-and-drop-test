@@ -5,9 +5,8 @@ export const ContainerItemSettings = styled.div`
   margin: 0 auto;
   flex-direction: column;
   align-items: center;
-  min-width: 650px;
-  width: 650px;
   z-index: 0;
+  width: 100%;
 `;
 
 export const ToolbarItemSettings = styled.div`

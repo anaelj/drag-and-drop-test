@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   MdFormatColorFill,
   MdFormatColorText,
@@ -14,12 +14,15 @@ import {
   ToolbarItemSettings,
   ContentItemSettings,
   Moviment,
-  FontSetting
+  FontSetting,
 } from "./styles";
 
 import ColorSelector from "react-color-selector";
+import createContext from "../Area/context.js";
 
-function ItemSettings({ data }) {
+function ItemSettings() {
+  const { selectedItem, setSelectedItem } = useContext(createContext);
+
   const tools = [
     { name: "backgroundColor", icon: MdFormatColorFill },
     { name: "fontColor", icon: MdFormatColorText },
@@ -43,8 +46,8 @@ function ItemSettings({ data }) {
   };
 
   const handleMoviment = (typeMoviment) => {
-    let topPosition = Number(data.top.replace("px", ""));
-    let leftPosition = Number(data.left.replace("px", ""));
+    let topPosition = Number(selectedItem.top.replace("px", ""));
+    let leftPosition = Number(selectedItem.left.replace("px", ""));
     switch (typeMoviment) {
       case "up":
         topPosition -= rangeMoviment;
@@ -62,18 +65,17 @@ function ItemSettings({ data }) {
         console.log("erro ao mover");
     }
     const newData = {
-      id: 0, //data.id,
+      id: selectedItem.id,
       top: topPosition + "px",
       left: leftPosition + "px",
-      cor: pickedColor,
-      texto: data.texto,
+      cor: selectedItem.cor,
+      texto: selectedItem.texto,
     };
-    console.log(newData);
-    // move(newData);
+    setSelectedItem(newData);
   };
 
   const handleGetElement = (tool) => {
-    console.log(tool, tools[0].name, tools[1].name);
+    // console.log(tool, tools[0].name, tools[1].name);
 
     switch (tool) {
       case tools[0].name:
@@ -141,13 +143,13 @@ function ItemSettings({ data }) {
         return (
           <FontSetting>
             <div>
-            <label htmlFor="fontStyle">Fonte:</label>
-            <input type="text" name="fontStyle" id="fontStyle" />
-              </div>  
+              <label htmlFor="fontStyle">Fonte:</label>
+              <input type="text" name="fontStyle" id="fontStyle" />
+            </div>
             <div>
-            <label htmlFor="fontSize">Tamanho:</label>
-            <input type="number" name="fontSize"  id="fontSize" />
-              </div>  
+              <label htmlFor="fontSize">Tamanho:</label>
+              <input type="number" name="fontSize" id="fontSize" />
+            </div>
           </FontSetting>
         );
 
@@ -156,6 +158,30 @@ function ItemSettings({ data }) {
     }
   };
 
+  useEffect(() => {
+    switch (toolSelected) {
+      case tools[0].name:
+        const tempItemBackeground = {
+          ...selectedItem,
+          backgroundColor: selectedColor,
+        };
+        // console.log(tempItemBackeground);
+        setSelectedItem(tempItemBackeground, '1');
+
+        break;
+      case tools[1].name:
+        const tempItemCor = { ...selectedItem, cor: selectedColor };
+        setSelectedItem(tempItemCor);
+        // console.log(tempItemCor, '2');
+        break;
+
+      default:
+        break;
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedColor]);
+
+  
   return (
     <ContainerItemSettings>
       <ToolbarItemSettings>

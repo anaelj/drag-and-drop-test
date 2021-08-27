@@ -19,4 +19,6 @@ export const ContainerTextList = styled.ul`
 
 export const TextItem = styled.div`
   margin-right: 24px;
+  display: flex;
+  flex-direction: column;
 `;
