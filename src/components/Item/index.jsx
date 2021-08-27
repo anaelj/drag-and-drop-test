@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from "react";
+import React, { useContext } from "react";
 import { useRef, useState } from "react";
 import { useDrag } from "react-dnd";
 import { Container, Moviment } from "./styles.js";
@@ -21,7 +21,15 @@ function Item({ data, index }) {
 
   const [{ isDragging }, dragRef] = useDrag({
     type: "CARD",
-    item: { id: data.id, top: data.top, left: data.left, cor: data.cor, texto: data.texto, children: data.children },
+    item: {
+      id: data.id,
+      top: data.top,
+      left: data.left,
+      cor: data.cor,
+      texto: data.texto,
+      children: data.children,
+      backgroundColor: data.backgroundColor
+    },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
@@ -54,7 +62,7 @@ function Item({ data, index }) {
       id: data.id,
       top: topPosition + "px",
       left: leftPosition + "px",
-      cor : pickedColor,
+      cor: pickedColor,
       texto: data.texto,
     };
 
@@ -96,14 +104,14 @@ function Item({ data, index }) {
         color: myColor,
         border: 0,
         fontSize: fontSize >= 10 ? fontSize + "px" : "16px",
+        background: data.backgroundColor
       }}
     >
       <div
-        
         onClick={() => setDisplayProps(!displayProps)}
         onKeyDown={(e) => handleKeyDown(e)}
       >
-         { data.children ? data.children : `${data.texto}`}
+        {data.children ? data.children : `${data.texto}`}
       </div>
       {displayProps && (
         <div>

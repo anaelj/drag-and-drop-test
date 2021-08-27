@@ -13,6 +13,8 @@ import filesize from "filesize";
 // import api from "../../services/api";
 // import domtoimage from "dom-to-image";
 import { saveAs } from "file-saver";
+import TextList from "../TextList";
+import ItemSettings from './../ItemSettings/index';
 
 function Area() {
   const data = [
@@ -22,6 +24,7 @@ function Area() {
       left: "40px",
       cor: "red",
       texto: "Texto padrão",
+      backgroundColor: "blue",
     },
   ];
   const ref = useRef();
@@ -46,6 +49,7 @@ function Area() {
         cor: item.cor,
         texto: item.texto,
         children: item.children,
+        backgroundColor: item.backgroundColor,
       });
     },
   });
@@ -69,6 +73,7 @@ function Area() {
       uploaded: false,
       error: false,
       url: null,
+      backgroundColor: "none",
     }));
     setUploadedFiles(uploadedFiles.concat(temp));
 
@@ -116,23 +121,47 @@ function Area() {
   useEffect(() => {
     // console.log(uploadedFiles[0]?.preview);
     if (uploadedFiles.length > 1) {
-      setElementsPosition([
-        ...elementsPosition,
-        {
-          id: Math.floor(Math.random() * 1000),
-          top: "10px",
-          left: "10px",
-          children: (
-            <img
-              src={uploadedFiles[uploadedFiles.length - 1].preview}
-              alt="img"
-            />
-          ),
-        },
-      ]);
+      uploadedFiles.forEach((element) => {
+        const exists = elementsPosition.find((item) => item.id === element.id);
+
+        if (!exists) {
+          setElementsPosition([
+            ...elementsPosition,
+            {
+              id: element.id,
+              top: "10px",
+              left: "10px",
+              // backgroundColor: uploadedFiles[uploadedFiles.length - 1].backgroundColor,
+              children: (
+                <img
+                  src={uploadedFiles[uploadedFiles.length - 1].preview}
+                  alt="img"
+                />
+              ),
+            },
+          ]);
+        }
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uploadedFiles]);
+
+  const handleChangebackgroundColor = ({ newColor, id }) => {
+    // elementsPosition.find(item => item.id === id).backgroundColor = newColor;
+    // console.log(elementsPosition.find(item => item.id === id))
+    // console.log(newColor, id)
+
+    setElementsPosition(
+      elementsPosition.map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              backgroundColor: newColor,
+            }
+          : item
+      )
+    );
+  };
 
   const handleTeste = () => {
     // downloadHandler();
@@ -228,7 +257,13 @@ function Area() {
         <LeftArea>
           <div>
             <Upload onUpload={handleUpload} />
-            {!!uploadedFiles.length && <FileList files={uploadedFiles} />}
+            <TextList textItens={elementsPosition} changebackGroundColor={handleChangebackgroundColor}/>
+            {!!uploadedFiles.length && (
+              <FileList
+                files={uploadedFiles}
+                changebackGroundColor={handleChangebackgroundColor}
+              />
+            )}
           </div>
         </LeftArea>
         <MainArea
@@ -244,11 +279,9 @@ function Area() {
         </MainArea>
       </Main>
       <Footer>
-        <div></div>
-        <div className="filelist">
-          {/* <Upload onUpload={handleUpload} /> */}
-        </div>
-        <div></div>
+            
+
+
       </Footer>
     </AreaContext.Provider>
   );

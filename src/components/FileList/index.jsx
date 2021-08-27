@@ -3,12 +3,13 @@ import React from "react";
 import { CircularProgressbar } from "react-circular-progressbar";
 import { ContainerFileList, FileInfo, Preview } from "./styles";
 import { MdCheckCircle, MdError, MdLink, MdColorLens } from "react-icons/md";
-import { useState } from "react";
 import ColorSelector from "react-color-selector";
-import { useEffect } from 'react';
+import { useState } from "react";
+import { useEffect } from "react";
 
-function FileList({ files }) {
-  const [showPaletteColor, setShowPaletteColor] = useState(-1);
+function FileList({ files, changebackGroundColor }) {
+  const [idElementPaletteColorSelected, setIdElementPaletteColorSelected] =
+    useState(-1);
 
   let [myColor, pickedColor] = useState();
   let picker_data = {
@@ -22,16 +23,11 @@ function FileList({ files }) {
     cellControl: 4,
   };
 
-  const handleShowpaletteColor = (itemIndex) => {
-    console.log(itemIndex)
-    setShowPaletteColor(showPaletteColor === -1 ? itemIndex : -1);
-    // setShowPaletteColor(-1);
-    console.log(showPaletteColor)
-  } 
-
   useEffect(() => {
-    console.log(showPaletteColor)
-  }, [showPaletteColor])
+    const temp = { newColor: myColor, id: idElementPaletteColorSelected };
+    changebackGroundColor(temp);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [myColor]);
 
   return (
     <ContainerFileList>
@@ -51,12 +47,19 @@ function FileList({ files }) {
           </FileInfo>
           <div>
             {!uploadedFile.uploaded && (
-              <button key={idx} onClick={() => setShowPaletteColor(showPaletteColor === -1 ? idx : -1)}>
+              <button
+                key={idx}
+                onClick={() =>
+                  setIdElementPaletteColorSelected(
+                    idElementPaletteColorSelected === -1 ? uploadedFile.id : -1
+                  )
+                }
+              >
                 {" "}
                 <MdColorLens size={24} color="black" />{" "}
               </button>
             )}
-            {showPaletteColor === idx && (
+            {idElementPaletteColorSelected === uploadedFile.id && (
               <div style={{ display: "block", position: "absolute" }}>
                 <ColorSelector
                   pallet={picker_data}

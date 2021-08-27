@@ -31,6 +31,7 @@ export const MainArea = styled.div`
   background-repeat: no-repeat;
   background-size: contain;
   flex: 2;
+  z-index: 8;
 /* background-position: 50% 50%; */
 
 `;
