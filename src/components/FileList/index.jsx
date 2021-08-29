@@ -3,12 +3,17 @@ import React from "react";
 import { CircularProgressbar } from "react-circular-progressbar";
 import { ContainerFileList, FileInfo, Preview } from "./styles";
 import { MdCheckCircle, MdError, MdLink } from "react-icons/md";
+import { MdSettings } from "react-icons/md";
+import { useState, useContext } from 'react';
+import createContext from "../Area/context.js";
 
 function FileList({ files }) {
-  
+  const [showSettings, setShowSettings] = useState(false);
+  const { selectedItem, setSelectedItem } = useContext(createContext);
+
   return (
     <ContainerFileList>
-      {files.map((uploadedFile, idx) => (
+      {files.map((uploadedFile) => (
         <li key={uploadedFile.id}>
           <FileInfo>
             <Preview src={uploadedFile.preview} />
@@ -20,6 +25,7 @@ function FileList({ files }) {
                   <button onClick={() => {}}>Excluir</button>
                 )}
               </span>
+              <MdSettings size={24} color={showSettings && uploadedFile.id === selectedItem.id ? "gray" : "green"} />{" "}
             </div>
           </FileInfo>
           <div>

@@ -17,8 +17,8 @@ import {
   FontSetting,
 } from "./styles";
 
-import ColorSelector from "react-color-selector";
 import createContext from "../Area/context.js";
+import { SketchPicker } from 'react-color';
 
 function ItemSettings() {
   const { selectedItem, setSelectedItem } = useContext(createContext);
@@ -33,45 +33,36 @@ function ItemSettings() {
 
   let [selectedColor, pickedColor] = useState();
   const [rangeMoviment, setRangeMoviment] = useState(5);
-
-  let picker_data = {
-    col: 12,
-    row: 12,
-    width: 300,
-    height: 250,
-    view: "both",
-    theme: "dark",
-    title: toolSelected === tools[0].name ? "Fundo" : "Fonte",
-    cellControl: 4,
-  };
+  const [fontSize, setFontSize] = useState(
+    selectedItem?.fontSize.replace("px", "")
+  );
+  const [fontFamily, setFontFamily] = useState(selectedItem.fontFamily);
 
   const handleMoviment = (typeMoviment) => {
     let topPosition = Number(selectedItem.top.replace("px", ""));
     let leftPosition = Number(selectedItem.left.replace("px", ""));
     switch (typeMoviment) {
       case "up":
-        topPosition -= rangeMoviment;
+        topPosition -= Number(rangeMoviment);
         break;
       case "down":
-        topPosition += rangeMoviment;
+        topPosition += Number(rangeMoviment);
         break;
       case "left":
-        leftPosition -= rangeMoviment;
+        leftPosition -= Number(rangeMoviment);
         break;
       case "right":
-        leftPosition += rangeMoviment;
+        leftPosition += Number(rangeMoviment);
         break;
       default:
         console.log("erro ao mover");
     }
-    const newData = {
-      id: selectedItem.id,
+
+    setSelectedItem({
+      ...selectedItem,
       top: topPosition + "px",
       left: leftPosition + "px",
-      cor: selectedItem.cor,
-      texto: selectedItem.texto,
-    };
-    setSelectedItem(newData);
+    });
   };
 
   const handleGetElement = (tool) => {
@@ -81,11 +72,11 @@ function ItemSettings() {
       case tools[0].name:
       case tools[1].name:
         return (
-          <ColorSelector
-            pallet={picker_data}
-            selectedColor={pickedColor}
-            style={{ zIndex: "0" }}
-          />
+          // <ColorSelector pallet={picker_data} selectedColor={pickedColor} />
+          <SketchPicker
+        color={ selectedColor }
+        onChangeComplete={ (color) => pickedColor(color.hex) }
+      />
         );
       case tools[2].name:
         return (
@@ -144,11 +135,22 @@ function ItemSettings() {
           <FontSetting>
             <div>
               <label htmlFor="fontStyle">Fonte:</label>
-              <input type="text" name="fontStyle" id="fontStyle" />
+              <select id="lang" onChange={(e) => setFontFamily(e.target.value)} value={fontFamily}>
+                  <option value="Arial">Arial</option>
+                  <option value='"Times New Roman"'>Times New Roman</option>
+                  <option value='Roboto'>Roboto</option>
+                  <option value='"Hina Mincho"'>Hina Mincho</option>
+               </select>
             </div>
             <div>
               <label htmlFor="fontSize">Tamanho:</label>
-              <input type="number" name="fontSize" id="fontSize" />
+              <input
+                type="number"
+                name="fontSize"
+                id="fontSize"
+                value={fontSize}
+                onChange={(e) => setFontSize(e.target.value)}
+              />
             </div>
           </FontSetting>
         );
@@ -166,11 +168,11 @@ function ItemSettings() {
           backgroundColor: selectedColor,
         };
         // console.log(tempItemBackeground);
-        setSelectedItem(tempItemBackeground, '1');
+        setSelectedItem(tempItemBackeground, "1");
 
         break;
       case tools[1].name:
-        const tempItemCor = { ...selectedItem, cor: selectedColor };
+        const tempItemCor = { ...selectedItem, color: selectedColor };
         setSelectedItem(tempItemCor);
         // console.log(tempItemCor, '2');
         break;
@@ -178,10 +180,20 @@ function ItemSettings() {
       default:
         break;
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedColor]);
-
   
+
+  useEffect(() => {
+    setSelectedItem({ ...selectedItem, fontSize: fontSize + "px" });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fontSize]);
+
+  useEffect(() => {
+    setSelectedItem({ ...selectedItem, fontFamily });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fontFamily]);
+
   return (
     <ContainerItemSettings>
       <ToolbarItemSettings>
@@ -193,7 +205,7 @@ function ItemSettings() {
               style={{ margin: "5px", border: "0px" }}
             >
               <item.icon
-                size="35px"
+                size="28px"
                 color={toolSelected === item.name ? "gray" : "green"}
               />
             </button>

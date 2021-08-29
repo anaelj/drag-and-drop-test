@@ -22,8 +22,7 @@ export const Main = styled.main`
 `;
 export const LeftArea = styled.div` 
   flex: 1;
-  overflow-y: scroll;
-
+  overflow-y: auto;
   /* background-position: 50% 50%; */
 
 `;
@@ -32,7 +31,7 @@ export const MainArea = styled.div`
   background-repeat: no-repeat;
   background-size: contain;
   flex: 2;
-  z-index: 8;
+  /* z-index: 8; */
 /* background-position: 50% 50%; */
 
 `;

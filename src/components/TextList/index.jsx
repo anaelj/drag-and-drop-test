@@ -1,10 +1,10 @@
 import React, { useState, useContext } from "react";
-import { MdSettings } from "react-icons/md";
 import ItemSettings from "../ItemSettings";
 import { ContainerTextList, TextItem } from "./styles.js";
 import createContext from "../Area/context.js";
+import { MdSettings } from "react-icons/md";
 
-export default function TextList({ textItens, changebackGroundColor }) {
+export default function TextList({ textItens }) {
   const [showSettings, setShowSettings] = useState(false);
   const { selectedItem, setSelectedItem } = useContext(createContext);
 
@@ -25,7 +25,7 @@ export default function TextList({ textItens, changebackGroundColor }) {
                       setSelectedItem(item);
                     }}
                     >
-                    <MdSettings size={24} color="#c2c2c2" />{" "}
+                    <MdSettings size={24} color={showSettings && item.id === selectedItem.id ? "gray" : "green"} />{" "}
                   </button>
                   <span>{item.texto}</span>
                 </div>

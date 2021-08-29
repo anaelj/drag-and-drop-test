@@ -10,6 +10,7 @@ import JSZip from "jszip";
 import FileList from "./../FileList/index";
 import { uniqueId } from "lodash";
 import filesize from "filesize";
+
 // import api from "../../services/api";
 // import domtoimage from "dom-to-image";
 import { saveAs } from "file-saver";
@@ -23,6 +24,8 @@ function Area() {
     color: "red",
     texto: "Texto padrão",
     backgroundColor: "blue",
+    fontSize: '16px',
+    fontFamily: 'Arial'
   };
 
   const data = [defaultItem];
@@ -37,13 +40,9 @@ function Area() {
     hover(item, monitor) {
       const draggedOffset = monitor.getClientOffset(); // posição do item durente a movimentação
       const itemMoving = {
-        id: item.id,
+        ...item,
         top: draggedOffset.y + "px",
-        left: draggedOffset.x + "px",
-        color: item.color,
-        texto: item.texto,
-        children: item.children,
-        backgroundColor: item.backgroundColor,
+        left: draggedOffset.x + "px"
       };
       setSelectedItem(itemMoving);
     },
@@ -121,10 +120,7 @@ function Area() {
 
         if (!exists) {
           const newItem = {
-            id: element.id,
-            top: "10px",
-            left: "10px",
-            // backgroundColor: uploadedFiles[uploadedFiles.length - 1].backgroundColor,
+            ...defaultItem,
             children: (
               <img
                 src={uploadedFiles[uploadedFiles.length - 1].preview}
@@ -196,22 +192,18 @@ function Area() {
   //     });
   // };
 
-  // useEffect(() => {
-  //   // console.log('1111111111111111')
-  //   // console.log(selectedItem)
-  //   // console.log('222222222222222')
-  //   setElementsPosition(
-  //     elementsPosition.map((item) =>
-  //       item.id === selectedItem.id ? selectedItem : item
-  //     )
-  //   );
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [selectedItem]);
+  useEffect(() => {
+    setElementsPosition(
+      elementsPosition.map((item) =>
+        item.id === selectedItem.id ? selectedItem : item
+      )
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedItem]);
 
   useEffect(() => {
-   console.log(elementsPosition)
-  }, [elementsPosition])
-
+    console.log(elementsPosition);
+  }, [elementsPosition]);
 
   return (
     <AreaContext.Provider
@@ -228,7 +220,8 @@ function Area() {
           <button
             onClick={() =>
               setElementsPosition([
-                ...elementsPosition, { ...defaultItem, texto: textoAdd }
+                ...elementsPosition,
+                { ...defaultItem, texto: textoAdd },
               ])
             }
           >
@@ -260,14 +253,22 @@ function Area() {
           id="capture"
           src={!!uploadedFiles.length && uploadedFiles[0].preview}
         >
-          {elementsPosition.map((item, idx) => (
-            <Item key={item.id} data={item} index={idx}>
+          {elementsPosition.map((item) => (
+            <Item key={item.id} data={item}>
               {item?.children};
             </Item>
           ))}
         </MainArea>
       </Main>
-      <Footer></Footer>
+      <Footer>
+        <ul>
+          {elementsPosition.map((item) => (
+            <li
+              key={item.id}
+            >{`Item: ${item.texto} - posicao: (${item.top},${item.left}) - color: ${item.color} - background: ${item.backgroundColor} - fontSize: ${item.fontSize} - fontFamily: ${item.fontFamily}`}</li>
+          ))}
+        </ul>
+      </Footer>
     </AreaContext.Provider>
   );
 }

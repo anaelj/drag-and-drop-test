@@ -24,7 +24,7 @@ export const Container = styled.div`
   cursor: move;
   position: absolute;
   padding: 0px;
-  z-index: 9;
+  /* z-index: 9; */
   
   ul {
     color: white;
