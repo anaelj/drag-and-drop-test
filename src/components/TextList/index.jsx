@@ -2,7 +2,8 @@ import React, { useState, useContext } from "react";
 import ItemSettings from "../ItemSettings";
 import { ContainerTextList, TextItem } from "./styles.js";
 import createContext from "../Area/context.js";
-import { MdSettings } from "react-icons/md";
+import { MdSettings, MdTextFields } from "react-icons/md";
+import { Preview } from "./../FileList/styles";
 
 export default function TextList({ textItens }) {
   const [showSettings, setShowSettings] = useState(false);
@@ -11,12 +12,18 @@ export default function TextList({ textItens }) {
   return (
     <ContainerTextList>
       {textItens.map(
-        (item) =>
+        (item, idx) =>
           item.texto &&
           item.texto.toString().trim() && (
-            <li key={item.id}>
-              <TextItem>
-                <div>
+            <li key={idx} onClick={() => setSelectedItem(item)}>
+              <TextItem selected={item.id === selectedItem.id ? true : false}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignContent: "center",
+                    justifyContent: "center",
+                  }}
+                >
                   <button
                     style={{ marginRight: "5px" }}
                     key={item.id}
@@ -24,18 +31,40 @@ export default function TextList({ textItens }) {
                       setShowSettings(!showSettings);
                       setSelectedItem(item);
                     }}
-                    >
-                    <MdSettings size={24} color={showSettings && item.id === selectedItem.id ? "gray" : "green"} />{" "}
+                  >
+                    <MdSettings
+                      size={24}
+                      color={
+                        showSettings && item.id === selectedItem.id
+                          ? "gray"
+                          : "green"
+                      }
+                    />{" "}
                   </button>
-                  <span>{item.texto}</span>
+                  {!item.children && <MdTextFields size="35" />}
+                  {item.children && <Preview src={item.children.props.src} />}
+                  <span style={{ marginLeft: "15px" }}>
+                    {item.texto}
+                    {/* <input
+                      type="text"
+                      value={item.texto}
+                      onChange={(e) =>
+                        setSelectedItem({
+                          ...selectedItem,
+                          texto: e.target.value,
+                        })
+                      }
+                      readOnly={item.children ? true : false}
+                    /> */}
+                  </span>
                 </div>
-                {item.id === selectedItem.id && showSettings && (
-                  <div>
-                    {" "}
-                    <ItemSettings data={item} />{" "}
-                  </div>
-                )}
               </TextItem>
+              {item.id === selectedItem.id && showSettings && (
+                <div>
+                  {" "}
+                  <ItemSettings data={item} />{" "}
+                </div>
+              )}
             </li>
           )
       )}

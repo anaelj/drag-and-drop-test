@@ -16,6 +16,16 @@ function FileList({ files }) {
       {files.map((uploadedFile) => (
         <li key={uploadedFile.id}>
           <FileInfo>
+              <button
+                    style={{ marginRight: "5px" }}
+                    key={uploadedFile.id}
+                    onClick={() => {
+                      setShowSettings(!showSettings);
+                      setSelectedItem(uploadedFile);
+                    }}
+                    >
+                    <MdSettings size={24} color={showSettings && uploadedFile.id === selectedItem.id ? "gray" : "green"} />{" "}
+                  </button>
             <Preview src={uploadedFile.preview} />
             <div>
               <strong>{uploadedFile.name}</strong>
@@ -25,7 +35,7 @@ function FileList({ files }) {
                   <button onClick={() => {}}>Excluir</button>
                 )}
               </span>
-              <MdSettings size={24} color={showSettings && uploadedFile.id === selectedItem.id ? "gray" : "green"} />{" "}
+
             </div>
           </FileInfo>
           <div>

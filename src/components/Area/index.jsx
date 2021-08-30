@@ -7,7 +7,7 @@ import AreaContext from "./context";
 import Upload from "../Upload";
 import html2canvas from "html2canvas";
 import JSZip from "jszip";
-import FileList from "./../FileList/index";
+// import FileList from "./../FileList/index";
 import { uniqueId } from "lodash";
 import filesize from "filesize";
 
@@ -23,9 +23,10 @@ function Area() {
     left: "40px",
     color: "red",
     texto: "Texto padrão",
-    backgroundColor: "blue",
+    backgroundColor: "none",
     fontSize: '16px',
-    fontFamily: 'Arial'
+    fontFamily: 'Arial',
+    backGroundImage: false
   };
 
   const data = [defaultItem];
@@ -114,25 +115,27 @@ function Area() {
 
   useEffect(() => {
     // console.log(uploadedFiles[0]?.preview);
-    if (uploadedFiles.length > 1) {
+
       uploadedFiles.forEach((element) => {
         const exists = elementsPosition.find((item) => item.id === element.id);
 
         if (!exists) {
           const newItem = {
             ...defaultItem,
+            texto : element.name,
             children: (
               <img
-                src={uploadedFiles[uploadedFiles.length - 1].preview}
+                src={element.preview}
                 alt="img"
               />
             ),
           };
+          // console.log(newItem);
           setElementsPosition([...elementsPosition, newItem]);
           setSelectedItem(newItem);
         }
       });
-    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [uploadedFiles]);
 
@@ -193,17 +196,20 @@ function Area() {
   // };
 
   useEffect(() => {
+    // console.log(selectedItem);
+
     setElementsPosition(
       elementsPosition.map((item) =>
         item.id === selectedItem.id ? selectedItem : item
       )
     );
+    // console.log(elementsPosition.find(item => item.backGroundImage === true));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedItem]);
 
-  useEffect(() => {
-    console.log(elementsPosition);
-  }, [elementsPosition]);
+  // useEffect(() => {
+  //   console.log(elementsPosition);
+  // }, [elementsPosition]);
 
   return (
     <AreaContext.Provider
@@ -245,15 +251,16 @@ function Area() {
           <div>
             <Upload onUpload={handleUpload} />
             <TextList textItens={elementsPosition} />
-            {!!uploadedFiles.length && <FileList files={uploadedFiles} />}
+            {/* {!!uploadedFiles.length && <FileList files={uploadedFiles} />} */}
           </div>
         </LeftArea>
         <MainArea
           ref={ref}
           id="capture"
-          src={!!uploadedFiles.length && uploadedFiles[0].preview}
+          src={elementsPosition.find(item => item.backGroundImage === true)?.children?.props?.src}
         >
           {elementsPosition.map((item) => (
+            !item.backGroundImage &&
             <Item key={item.id} data={item}>
               {item?.children};
             </Item>

@@ -18,10 +18,14 @@ import {
 } from "./styles";
 
 import createContext from "../Area/context.js";
-import { SketchPicker } from 'react-color';
+import { SketchPicker } from "react-color";
 
 function ItemSettings() {
   const { selectedItem, setSelectedItem } = useContext(createContext);
+  const [backGroundImage, setBackGroundImage] = useState(
+    selectedItem.backGroundImage
+  );
+  const [position, setPosition] = useState({top: selectedItem.top, left: selectedItem.left});
 
   const tools = [
     { name: "backgroundColor", icon: MdFormatColorFill },
@@ -58,12 +62,35 @@ function ItemSettings() {
         console.log("erro ao mover");
     }
 
-    setSelectedItem({
-      ...selectedItem,
+    // const newItem = {
+    //   ...selectedItem,
+    //   top: topPosition + "px",
+    //   left: leftPosition + "px",
+    // };
+
+    // console.log(newItem)
+    setPosition({
       top: topPosition + "px",
       left: leftPosition + "px",
-    });
+    })
   };
+
+  useEffect(() => {
+    setSelectedItem({
+      ...selectedItem,
+      backGroundImage 
+    })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [backGroundImage]);
+
+  useEffect(() => {
+    setSelectedItem({
+      ...selectedItem,
+      top: position.top,
+      left: position.left,
+    })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [position]);
 
   const handleGetElement = (tool) => {
     // console.log(tool, tools[0].name, tools[1].name);
@@ -74,13 +101,18 @@ function ItemSettings() {
         return (
           // <ColorSelector pallet={picker_data} selectedColor={pickedColor} />
           <SketchPicker
-        color={ selectedColor }
-        onChangeComplete={ (color) => pickedColor(color.hex) }
-      />
+            color={selectedColor}
+            onChangeComplete={(color) => pickedColor(color.hex)}
+          />
         );
       case tools[2].name:
         return (
           <Moviment>
+            <div>
+              <button onClick={() => setBackGroundImage(!backGroundImage)}>
+                Background
+              </button>
+            </div>
             <div>
               <div></div>
               <div>
@@ -135,12 +167,16 @@ function ItemSettings() {
           <FontSetting>
             <div>
               <label htmlFor="fontStyle">Fonte:</label>
-              <select id="lang" onChange={(e) => setFontFamily(e.target.value)} value={fontFamily}>
-                  <option value="Arial">Arial</option>
-                  <option value='"Times New Roman"'>Times New Roman</option>
-                  <option value='Roboto'>Roboto</option>
-                  <option value='"Hina Mincho"'>Hina Mincho</option>
-               </select>
+              <select
+                id="lang"
+                onChange={(e) => setFontFamily(e.target.value)}
+                value={fontFamily}
+              >
+                <option value="Arial">Arial</option>
+                <option value='"Times New Roman"'>Times New Roman</option>
+                <option value="Roboto">Roboto</option>
+                <option value='"Hina Mincho"'>Hina Mincho</option>
+              </select>
             </div>
             <div>
               <label htmlFor="fontSize">Tamanho:</label>
@@ -182,16 +218,15 @@ function ItemSettings() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedColor]);
-  
 
   useEffect(() => {
     setSelectedItem({ ...selectedItem, fontSize: fontSize + "px" });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fontSize]);
 
   useEffect(() => {
     setSelectedItem({ ...selectedItem, fontFamily });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fontFamily]);
 
   return (

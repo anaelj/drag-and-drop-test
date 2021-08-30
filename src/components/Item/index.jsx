@@ -1,13 +1,13 @@
 import React from "react";
-import { useRef } from "react";
+import { useRef , useContext} from "react";
 import { useDrag } from "react-dnd";
 import { Container } from "./styles.js";
-// import createContext from "../Area/context.js";
+import createContext from "../Area/context.js";
 
 function Item({ data }) {
   const ref = useRef();
 
-  // const { selectedItem } = useContext(createContext);
+  const { setSelectedItem } = useContext(createContext);
   const [{ isDragging }, dragRef] = useDrag({
     type: "CARD",
     item: data,
@@ -22,6 +22,7 @@ function Item({ data }) {
     <Container
       ref={ref}
       isDragging={isDragging}
+      onClick={()=> setSelectedItem(data)}
       style={{
         position: "absolute",
         left: data.left,
